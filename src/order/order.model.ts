@@ -8,7 +8,7 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { BookableObject } from 'src/bookableObject/bookableObject.model';
+import { BookableObject } from 'src/bookable/bookable.model';
 
 @Table
 export class Order extends Model {
