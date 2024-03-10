@@ -11,6 +11,7 @@ async function bootstrap() {
     .setDescription('Api to manage bookable objects and orders.')
     .setVersion('1.0')
     .addServer('http://localhost:3000/', 'local')
+    .addServer('https://nest-booking-app.onrender.com/', 'production')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
