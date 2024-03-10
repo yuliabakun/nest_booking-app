@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   BelongsTo,
   Column,
@@ -10,6 +11,7 @@ import {
 } from 'sequelize-typescript';
 import { BookableObject } from 'src/bookable/bookable.model';
 
+@Injectable()
 @Table
 export class Order extends Model {
   @Default(DataType.UUIDV4)

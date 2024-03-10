@@ -1,67 +1,50 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Order } from './order.model';
-import { BookableService } from 'src/bookable/bookable.service';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order)
-    private orderModel: typeof Order,
-
-    @Inject(BookableService)
-    private readonly bookableService: BookableService,
+    private readonly orderModel: typeof Order,
   ) {}
 
   async findAll() {
     return this.orderModel.findAll();
   }
 
-  async findOne(id: string) {
-    const order = await this.orderModel.findOne({ where: { id } });
+  public async findAllOrdersByBookableIdBetweenDates(
+    bookableObjectId: string,
+    from: Date,
+    to: Date,
+  ) {
+    return this.orderModel.findAll({
+      where: {
+        bookableObjectId,
+        startDate: {
+          [Op.between]: [from, to],
+        },
+        endDate: {
+          [Op.gt]: from,
+        },
+      },
+    });
+  }
 
-    if (!order) {
-      throw new NotFoundException();
-    }
-
-    return order;
+  public async findOne(id: string) {
+    return this.orderModel.findOne({ where: { id } });
   }
 
   async create(order: Partial<Order>) {
-    const bookable = await this.bookableService.findOne(order.bookableObjectId);
-
-    if (!bookable) {
-      throw new NotFoundException({
-        message: 'Bookable Object is not found, check the Id property',
-      });
-    }
-
     return this.orderModel.create(order);
   }
 
   async update(id: string, params: Partial<Order>) {
-    const order = await this.orderModel.findOne({ where: { id } });
-
-    if (!order) {
-      throw new NotFoundException();
-    }
-
-    order.set(params);
-
-    await order.save();
-
-    return order;
+    return this.orderModel.update(params, { where: { id } });
   }
 
   async delete(id: string) {
-    const numberOfDeletedOrders = await this.orderModel.destroy({
-      where: { id },
-    });
-
-    if (numberOfDeletedOrders === 0) {
-      throw new NotFoundException();
-    }
-
-    return { message: 'Order deleted successfully' };
+    return this.orderModel.destroy({ where: { id } });
   }
 }

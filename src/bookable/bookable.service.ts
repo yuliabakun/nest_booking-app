@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BookableObject } from './bookable.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { BookableObject } from './bookable.model';
 
 @Injectable()
 export class BookableService {
@@ -18,17 +18,13 @@ export class BookableService {
   }
 
   async create(bookable: Partial<BookableObject>) {
-    const objectCreated = await this.bookableModel.create(bookable);
-
-    return objectCreated;
+    return this.bookableModel.create(bookable);
   }
 
   async update(id: string, params: Partial<BookableObject>) {
-    const updatedObject = await this.bookableModel.update(params, {
+    return this.bookableModel.update(params, {
       where: { id },
     });
-
-    return updatedObject;
   }
 
   async delete(id: string) {

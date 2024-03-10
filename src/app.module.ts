@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -8,6 +8,7 @@ import { OrderModule } from './order/order.module';
 import { BookableObject } from './bookable/bookable.model';
 import { BookableModule } from './bookable/bookable.module';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { AppLoggerMiddleware } from './middlewares/logging';
 
 @Module({
   imports: [
@@ -32,4 +33,8 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}
